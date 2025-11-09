@@ -1,9 +1,7 @@
 package main
 
 import (
-	"errors"
 	"fmt"
-	"time"
 )
 
 // ----------------------------------------- lesson 1
@@ -19,57 +17,130 @@ import (
 
 //  ------------------------------------------ lesson 2
 
-func chargeForLineItem[T lineItem](newItem T, oldItems []T, balance float64) ([]T, float64, error) {
-	if balance < newItem.GetCost(){
-		return nil, 0.0, errors.New("insufficient funds")
-	}
+// func chargeForLineItem[T lineItem](newItem T, oldItems []T, balance float64) ([]T, float64, error) {
 
-	newList := append(oldItems, newItem)
-	newUserBalance := balance - newItem.GetCost();
+// 	if balance < newItem.GetCost(){
+// 		return nil, 0.0, errors.New("insufficient funds")
+// 	}
 
-	return newList, newUserBalance, nil
+// 	newUserBalance := balance - newItem.GetCost();
+// 	newList := append(oldItems, newItem)
+
+// 	return newList, newUserBalance, nil
+// }
+
+// // don't edit below this line
+// type lineItem interface {
+// 	GetCost() float64
+// 	GetName() string
+// }
+
+// type subscription struct {
+// 	userEmail string
+// 	startDate time.Time
+// 	interval  string
+// }
+
+// func (s subscription) GetName() string {
+// 	return fmt.Sprintf("%s subscription", s.interval)
+// }
+
+// func (s subscription) GetCost() float64 {
+// 	if s.interval == "monthly" {
+// 		return 25.00
+// 	}
+// 	if s.interval == "yearly" {
+// 		return 250.00
+// 	}
+// 	return 0.0
+// }
+
+// type oneTimeUsagePlan struct {
+// 	userEmail        string
+// 	numEmailsAllowed int
+// }
+
+// func (otup oneTimeUsagePlan) GetName() string {
+// 	return fmt.Sprintf("one time usage plan with %v emails", otup.numEmailsAllowed)
+// }
+
+// func (otup oneTimeUsagePlan) GetCost() float64 {
+// 	const costPerEmail = 0.03
+// 	return float64(otup.numEmailsAllowed) * costPerEmail
+// }
+
+// ------------------------------------------------ lesson 7
+type biller[C customer] interface {
+	Charge(C) bill
+	Name() string
 }
 
 // don't edit below this line
-type lineItem interface {
-	GetCost() float64
-	GetName() string
+
+type userBiller struct {
+	Plan string
 }
 
-type subscription struct {
-	userEmail string
-	startDate time.Time
-	interval  string
-}
-
-func (s subscription) GetName() string {
-	return fmt.Sprintf("%s subscription", s.interval)
-}
-
-func (s subscription) GetCost() float64 {
-	if s.interval == "monthly" {
-		return 25.00
+func (ub userBiller) Charge(u user) bill {
+	amount := 50.0
+	if ub.Plan == "pro" {
+		amount = 100.0
 	}
-	if s.interval == "yearly" {
-		return 250.00
+	return bill{
+		Customer: u,
+		Amount:   amount,
 	}
-	return 0.0
 }
 
-type oneTimeUsagePlan struct {
-	userEmail        string
-	numEmailsAllowed int
+func (sb userBiller) Name() string {
+	return fmt.Sprintf("%s user biller", sb.Plan)
 }
 
-func (otup oneTimeUsagePlan) GetName() string {
-	return fmt.Sprintf("one time usage plan with %v emails", otup.numEmailsAllowed)
+type orgBiller struct {
+	Plan string
 }
 
-func (otup oneTimeUsagePlan) GetCost() float64 {
-	const costPerEmail = 0.03
-	return float64(otup.numEmailsAllowed) * costPerEmail
+func (ob orgBiller) Name() string {
+	return fmt.Sprintf("%s org biller", ob.Plan)
 }
 
-func main(){
+func (ob orgBiller) Charge(o org) bill {
+	amount := 2000.0
+	if ob.Plan == "pro" {
+		amount = 3000.0
+	}
+	return bill{
+		Customer: o,
+		Amount:   amount,
+	}
+}
+
+type customer interface {
+	GetBillingEmail() string
+}
+
+type bill struct {
+	Customer customer
+	Amount   float64
+}
+
+type user struct {
+	UserEmail string
+}
+
+func (u user) GetBillingEmail() string {
+	return u.UserEmail
+}
+
+type org struct {
+	Admin user
+	Name  string
+}
+
+func (o org) GetBillingEmail() string {
+	return o.Admin.GetBillingEmail()
+}
+
+func main() {
 	fmt.Println("app started")
 }
