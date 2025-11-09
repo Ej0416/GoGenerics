@@ -70,76 +70,104 @@ import (
 // }
 
 // ------------------------------------------------ lesson 7
-type biller[C customer] interface {
-	Charge(C) bill
-	Name() string
-}
+// type biller[C customer] interface {
+// 	Charge(C) bill
+// 	Name() string
+// }
 
-// don't edit below this line
+// // don't edit below this line
 
-type userBiller struct {
-	Plan string
-}
+// type userBiller struct {
+// 	Plan string
+// }
 
-func (ub userBiller) Charge(u user) bill {
-	amount := 50.0
-	if ub.Plan == "pro" {
-		amount = 100.0
-	}
-	return bill{
-		Customer: u,
-		Amount:   amount,
-	}
-}
+// func (ub userBiller) Charge(u user) bill {
+// 	amount := 50.0
+// 	if ub.Plan == "pro" {
+// 		amount = 100.0
+// 	}
+// 	return bill{
+// 		Customer: u,
+// 		Amount:   amount,
+// 	}
+// }
 
-func (sb userBiller) Name() string {
-	return fmt.Sprintf("%s user biller", sb.Plan)
-}
+// func (sb userBiller) Name() string {
+// 	return fmt.Sprintf("%s user biller", sb.Plan)
+// }
 
-type orgBiller struct {
-	Plan string
-}
+// type orgBiller struct {
+// 	Plan string
+// }
 
-func (ob orgBiller) Name() string {
-	return fmt.Sprintf("%s org biller", ob.Plan)
-}
+// func (ob orgBiller) Name() string {
+// 	return fmt.Sprintf("%s org biller", ob.Plan)
+// }
 
-func (ob orgBiller) Charge(o org) bill {
-	amount := 2000.0
-	if ob.Plan == "pro" {
-		amount = 3000.0
-	}
-	return bill{
-		Customer: o,
-		Amount:   amount,
-	}
-}
+// func (ob orgBiller) Charge(o org) bill {
+// 	amount := 2000.0
+// 	if ob.Plan == "pro" {
+// 		amount = 3000.0
+// 	}
+// 	return bill{
+// 		Customer: o,
+// 		Amount:   amount,
+// 	}
+// }
 
-type customer interface {
-	GetBillingEmail() string
-}
+// type customer interface {
+// 	GetBillingEmail() string
+// }
 
-type bill struct {
-	Customer customer
-	Amount   float64
-}
+// type bill struct {
+// 	Customer customer
+// 	Amount   float64
+// }
 
-type user struct {
-	UserEmail string
-}
+// type user struct {
+// 	UserEmail string
+// }
 
-func (u user) GetBillingEmail() string {
-	return u.UserEmail
-}
+// func (u user) GetBillingEmail() string {
+// 	return u.UserEmail
+// }
 
-type org struct {
-	Admin user
-	Name  string
-}
+// type org struct {
+// 	Admin user
+// 	Name  string
+// }
 
-func (o org) GetBillingEmail() string {
-	return o.Admin.GetBillingEmail()
-}
+// func (o org) GetBillingEmail() string {
+// 	return o.Admin.GetBillingEmail()
+// }
+
+// ================================== chapter 15: enums (or lacked there of)
+
+// func (a *analytics) handleEmailBounce(em email) error {
+// 	if err := em.recipient.updateStatus(em.status); err != nil{
+// 		return fmt.Errorf("error updating user status: %w", err)
+// 	}
+
+// 	if err := a.track(em.status); err != nil {
+// 		return fmt.Errorf("error tracking user bounce: %w", err)
+// 	}
+
+// 	em.recipient.updateStatus(em.status)
+// 	a.track(em.status)
+// 	return nil
+// }
+
+// +++++++++++++++++++++++++++++++++++++ apperently the onle way to have "enums" in go
+
+type emailStatus int;
+
+const (
+	emailBounced emailStatus = iota
+	emailInvalid
+	emailDelivered
+	emailOpened
+)
+
 
 func main() {
 	fmt.Println("app started")
